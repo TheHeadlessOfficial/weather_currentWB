@@ -9,7 +9,7 @@ import requests
 # from textwrap import dedent
 # Lock file to tell conky that the script is running
 lock_file = "/tmp/script_wbcurrent.lock"
-# Create lock file
+# Check for file lock
 try:
     open(lock_file, 'w').close()
     ################################ get your HOME automatically
