@@ -1,0 +1,21 @@
+${color3}${alignc}----------------- WEATHERBIT ALERTS -----------------
+${color2}${font URW Gothic L:size=7}Title: ${color}${execpi 600 sed -n '7p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}
+${color2}Sev: ${color}${execpi 600 sed -n '14p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}
+${color2}Start: ${color}${execpi 600 sed -n '20p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}${color2}${goto 200}end: ${color}${execpi 600 sed -n '22p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}
+${color2}Expires: ${color}${execpi 600 sed -n '18p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}
+${color2}Reg: ${color}${execpi 600 sed -n '24p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}
+${color1}${font URW Gothic L:size=6}${execpi 600 sed -n '8p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}${color}
+${color1}${font URW Gothic L:size=6}${execpi 600 sed -n '9p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}${color}
+${color1}${font URW Gothic L:size=6}${execpi 600 sed -n '10p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}${color}
+${color1}${font URW Gothic L:size=6}${execpi 600 sed -n '11p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}${color}
+${color1}${font URW Gothic L:size=6}${execpi 600 sed -n '12p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}${font URW Gothic L:size=7}${color}
+${color2}${font URW Gothic L:size=7}Title: ${color}${execpi 600 sed -n '25p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}
+${color2}Sev: ${color}${execpi 600 sed -n '32p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}
+${color2}Start: ${color}${execpi 600 sed -n '38p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}${color2}${goto 200}end: ${color}${execpi 600 sed -n '40p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}
+${color2}Expires: ${color}${execpi 600 sed -n '36p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}
+${color2}Reg: ${color}${execpi 600 sed -n '42p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}
+${color1}${font URW Gothic L:size=6}${execpi 600 sed -n '26p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}${color}
+${color1}${font URW Gothic L:size=6}${execpi 600 sed -n '27p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}${color}
+${color1}${font URW Gothic L:size=6}${execpi 600 sed -n '28p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}${color}
+${color1}${font URW Gothic L:size=6}${execpi 600 sed -n '29p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}${color}
+${color1}${font URW Gothic L:size=6}${execpi 600 sed -n '30p' /home/hiro/.conkyGITHUB/weather/Weatherbit/today/-alerts.txt}${font URW Gothic L:size=7}${color}

@@ -1,0 +1,744 @@
+import os, sys
+from PIL import Image
+import time
+import requests
+import datetime
+import json
+import pprint
+import textwrap
+from textwrap import dedent
+################################ get your HOME automatically
+homepath = os.environ['HOME']
+homename = homepath
+homename = homename[6:]
+################################ set your latitude, longitude and APPID
+mylat = 45.373046
+mylon = 11.835058
+myAPPID = '379271addcce4fe3a8ee92846581992c'
+################################ pattern url today
+#url = 'https://api.weatherbit.io/v2.0/current?lat=35.7796&lon=-78.6382&key=API_KEY&include=minutely'
+url = 'https://api.weatherbit.io/v2.0/current?lat=' + str(mylat) + '&lon=' + str(mylon) + '&key=' + myAPPID
+res = requests.get(url).json()
+data = res
+################################ pattern url alerts
+#url = 'https://api.weatherbit.io/v2.0/alerts?lat=39.75895&lon=-84.19161&key=API_KEY'
+url2 = 'https://api.weatherbit.io/v2.0/alerts?lat=' + str(mylat) + '&lon=' + str(mylon) + '&key=' + myAPPID
+res2 = requests.get(url2).json()
+data2 = res2
+################################ set variables
+myd = 72
+tdeg = 0
+winddeg = 0
+################################ insert angle of my North in 'myd' (if no wind then winddeg doesn't load)
+vtext = 'n/a'
+################################ set the paths for the API files
+ptemp = '/.conkyWEATHERBIT/weather/Weatherbit/today/'
+#                   set the path for the ERROR
+perr = '/home/' + homename + ptemp + '-error.txt'
+#                   set the path for the FLAGS
+pflags = '/home/' + homename + ptemp + 'flags.txt'
+#                   set the path for today raw data
+ptodayraw = '/home/' + homename + ptemp + 'wbtodayraw.txt'
+#                   set the path for today clean data
+ptodayclean = '/home/' + homename + ptemp + 'wbtodayclean.txt'
+#                   set the path for the weatherbit logo
+pwblogo = '/home/' + homename + ptemp + 'wblogo.txt'
+#                   set the paths for the compass
+parrow = '/home/' + homename + '/.conky/weather/compass/arrow.png'
+parrow2 = '/home/' + homename + '/.conky/weather/compass/arrow2.png'
+parrowt = '/home/' + homename + '/.conky/weather/compass/arrowt.png'
+parrowt2 = '/home/' + homename + '/.conky/weather/compass/arrowt2.png'
+pcompass = '/home/' + homename + ptemp + 'todaycompass.txt'
+pathwindrose = '${image $HOME/.conky/weather/compass/windsrose.png -p 305,60 -s 100x100}'
+#                   set the path for today dewpoint
+pdewpoint = '/home/' + homename + ptemp + 'todaywbdewpoint.txt'
+#                   set the path for today uv index
+puvindex = '/home/' + homename + ptemp + 'todaywbuvindex.txt'
+#                   set the path for today aqi
+paqi = '/home/' + homename + ptemp + 'todaywbaqi.txt'
+#                   set the path for the sun duration
+psundur = '/home/' + homename + ptemp + 'sunduration.txt'
+#                   set the path for today main icon
+ptodaymainicon = '/home/' + homename + ptemp + 'todayicon.txt'
+#                   set the path for today main icon OWM
+ptodaymainiconOWM = '/home/' + homename + ptemp + 'todayiconOWM.txt'
+#                   set the path for HOT icon
+photicon = '/home/' + homename + ptemp + 'todayiconhotOWM.txt'
+#                   set the path for COLD icon
+pcoldicon = '/home/' + homename + ptemp + 'todayiconcoldOWM.txt'
+#                   set the path for the TODAY conky section
+pathtodayconky = '/home/' + homename + ptemp + 'todayconky.txt'
+#                   set the path for the MOON section
+pathmoon = '/home/' + homename + ptemp + 'moon.txt'
+#                   set the path for the ALERTS raw section
+pathalertsraw = '/home/' + homename + ptemp + '-alertsraw.txt'
+#                   set the path for the ALERTS clean section
+pathalerts = '/home/' + homename + ptemp + '-alerts.txt'
+#                   set the path for the ALERTS conky section
+pathalertsc = '/home/' + homename + ptemp + 'alerts.txt'
+################################ get data for ERROR section
+try:
+    coderr = data['error']
+except:
+    coderr = 'ok'
+################################ write raw data for ERROR section
+fo = open(perr, 'w')
+fo.write('error: {}\n'.format(coderr))
+fo.close()
+################################ get data for today
+count = data['count']
+lat = data['data'][0]['lat']
+lon = data['data'][0]['lon']
+sunrise = data['data'][0]['sunrise']
+sunset = data['data'][0]['sunset']
+timezone = data['data'][0]['timezone']
+timezone = timezone + '        '
+station = data['data'][0]['station']
+obtime = data['data'][0]['ob_time']
+datetimec = data['data'][0]['datetime']
+ts = data['data'][0]['ts']
+ts2 = time.strftime("%d-%B-%Y", time.localtime(ts))
+cityname = data['data'][0]['city_name']
+countrycode = data['data'][0]['country_code']
+statecode = data['data'][0]['state_code']
+pressure = data['data'][0]['pres']
+seapressure = data['data'][0]['slp']
+windspeed = data['data'][0]['wind_spd']
+#                   disable next row if you set IMPERIAL system in your IDAPP, cause you will get miles/hours. Next row transforms meters/second into Kilometers/hour.
+windspeed = round(windspeed * 3.6, 2)
+winddeg = data['data'][0]['wind_dir']
+winddegabb = data['data'][0]['wind_cdir']
+winddegverb = data['data'][0]['wind_cdir_full']
+temp = data['data'][0]['temp']
+tempfeelslike = data['data'][0]['app_temp']
+humidity = data['data'][0]['rh']
+cdewpoint = data['data'][0]['dewpt']
+clouds = data['data'][0]['clouds']
+pod = data['data'][0]['pod']
+icon = data['data'][0]['weather']['icon']
+code = data['data'][0]['weather']['code']
+desc = data['data'][0]['weather']['description']
+vis = data['data'][0]['vis']
+precip = data['data'][0]['precip']
+snow = data['data'][0]['snow']
+uv = data['data'][0]['uv']
+aqi = data['data'][0]['aqi']
+dhi = data['data'][0]['dhi']
+dni = data['data'][0]['dni']
+ghi = data['data'][0]['ghi']
+solarrad = data['data'][0]['solar_rad']
+elevangle = data['data'][0]['elev_angle']
+hangle = data['data'][0]['h_angle']
+################################ write raw data on a file
+fo = open(ptodayraw, 'w')
+fo.write('Count: {}\n'.format(count))
+fo.write('lat: {}\n'.format(lat))
+fo.write('lon: {}\n'.format(lon))
+fo.write('Sunrise: {}\n'.format(sunrise))
+fo.write('Sunset: {}\n'.format(sunset))
+fo.write('TimeZone: {}\n'.format(timezone))
+fo.write('Station: {}\n'.format(station))
+fo.write('Obtime: {}\n'.format(obtime))
+fo.write('Datetime: {}\n'.format(datetimec))
+fo.write('Ts: {}\n'.format(ts))
+fo.write('Ts2: {}\n'.format(ts2))
+fo.write('Cityname: {}\n'.format(cityname))
+fo.write('Countrycode: {}\n'.format(countrycode))
+fo.write('Statecode: {}\n'.format(statecode))
+fo.write('Pressure: {}m/b\n'.format(pressure))
+fo.write('SeaPressure: {}m/b\n'.format(seapressure))
+fo.write('Windspeed: {} Km/h\n'.format(windspeed))
+fo.write('Winddeg: {}\n'.format(winddeg))
+fo.write('Winddegabb: {}\n'.format(winddegabb))
+fo.write('Winddegverb: {}\n'.format(winddegverb))
+fo.write('temp: {}°C\n'.format(temp))
+fo.write('(feels: {}°C)\n'.format(tempfeelslike))
+fo.write('Humidity: {}%\n'.format(humidity))
+fo.write('Dewpoint: {}°C\n'.format(cdewpoint))
+fo.write('Clouds: {}%\n'.format(clouds))
+fo.write('Pod: {}\n'.format(pod))
+fo.write('Icon: {}\n'.format(icon))
+fo.write('Code: {}\n'.format(code))
+fo.write('Description: {}\n'.format(desc))
+fo.write('Visibility: {}Km\n'.format(vis))
+fo.write('Rainprecip: {} mm/hr\n'.format(precip))
+fo.write('Snowprecip: {} mm/hr\n'.format(snow))
+fo.write('UVindex: {}\n'.format(uv))
+fo.write('AQI: {}\n'.format(aqi))
+fo.write('Diffuse_horizontal_solar_irradiance_(W/m^2): {} W/m^2\n'.format(dhi))
+fo.write('Direct_normal_solar_irradiance_(W/m^2): {} W/m^2\n'.format(dni))
+fo.write('Global_horizontal_solar_irradiance_(W/m^2): {} W/m^2\n'.format(ghi))
+fo.write('Solarrad: {} W/m^2\n'.format(solarrad))
+fo.write('Elevangle: {}°\n'.format(elevangle))
+fo.write('Hourangle: {}°\n'.format(hangle))
+fo.close()
+################################ write clean data on a file
+fo = open(ptodayclean, 'w')
+fo.write('{}\n'.format(count))
+fo.write('{}\n'.format(lat))
+fo.write('{}\n'.format(lon))
+fo.write('{}\n'.format(sunrise))
+fo.write('{}\n'.format(sunset))
+fo.write('{}\n'.format(timezone))
+fo.write('{}\n'.format(station))
+fo.write('{}\n'.format(obtime))
+fo.write('{}\n'.format(datetime))
+fo.write('{}\n'.format(ts))
+fo.write('{}\n'.format(ts2))
+fo.write('{}\n'.format(cityname))
+fo.write('{}\n'.format(countrycode))
+fo.write('{}\n'.format(statecode))
+fo.write('{}\n'.format(pressure))
+fo.write('{}\n'.format(seapressure))
+fo.write('{}\n'.format(windspeed))
+fo.write('{}\n'.format(winddeg))
+fo.write('{}\n'.format(winddegabb))
+fo.write('{}\n'.format(winddegverb))
+fo.write('{}\n'.format(temp))
+fo.write('{}\n'.format(tempfeelslike))
+fo.write('{}\n'.format(humidity))
+fo.write('{}\n'.format(cdewpoint))
+fo.write('{}\n'.format(clouds))
+fo.write('{}\n'.format(pod))
+fo.write('{}\n'.format(icon))
+fo.write('{}\n'.format(code))
+fo.write('{}\n'.format(desc))
+fo.write('{}\n'.format(vis))
+fo.write('{}\n'.format(precip))
+fo.write('{}\n'.format(snow))
+fo.write('{}\n'.format(uv))
+fo.write('{}\n'.format(aqi))
+fo.write('{}\n'.format(dhi))
+fo.write('{}\n'.format(dni))
+fo.write('{}\n'.format(ghi))
+fo.write('{}\n'.format(solarrad))
+fo.write('{}\n'.format(elevangle))
+fo.write('{}\n'.format(hangle))
+fo.close()
+################################ create FLAG path
+pi = '${image /home/'
+pi2 = homename
+pi3 = '/.conky/flags/'
+pf = '.png -p 381,0 -s 19x13}'
+countrycode = countrycode.lower()
+tot = pi + pi2 + pi3 + countrycode + pf
+if countrycode == vtext:
+   fo = open(pflags, 'w')
+   tot = 'transparent'
+   fo.write('{}\n'.format(tot))
+elif countrycode != vtext:
+   fo = open(pflags, 'w')
+   fo.write('{}\n'.format(tot))
+fo.close()
+################################ create the path for weatherbit logo
+pi = '${image /home/'
+pi2 = homename
+pi3 = '/.conkyWEATHERBIT/weather/Weatherbit/today/wblogo'
+est = '.png -p '
+x = 110
+virg = ','
+y = 0
+pf = ' -s 15x15}'
+fo = open(pwblogo, 'w')
+tot = pi + pi2 + pi3 + est + str(x) + virg + str(y) + pf
+fo.write('{}\n'.format(tot))
+fo.close()
+################################ write the path for COMPASS icon
+#                  grades calculation for winddeg, trasparent image if no wind (use negative tdeg to rotate clockwise)
+if winddeg == 'empty':
+    tdeg = myd
+    #filepath = '/home/' + homename + '/.conky/weather/compass/arrowt.png'
+    temp1 = Image.open(parrowt)
+    temp2 = temp1.rotate(-tdeg)
+    #filepath = '/home/' + homename + '/.conky/weather/compass/arrowt2.png'    
+    temp2.save(parrowt2)
+    temp3 = '${image /home/'
+    temp4 = homename
+    temp5 = '/.conky/weather/compass/arrowt2'
+    pfcomp = '.png -p 305,60 -s 100x100}'
+    totcomp = temp3 + temp4 + temp5 + pfcomp
+    #filepath = '/home/' + homename + '/.conky(WEATHERBIT)/weather/Weatherbit/today/todaycompass.txt'
+    fo = open(pcompass, 'w')
+    fo.write('{}\n'.format(totcomp))
+    fo.write('{}\n'.format(pathwindrose))
+elif winddeg != 'empty':
+    tdeg = myd + winddeg
+    #filepath = '/home/' + homename + '/.conky/weather/compass/arrow.png'
+    temp1 = Image.open(parrow)
+    temp2 = temp1.rotate(-tdeg)
+    #filepath = '/home/' + homename + '/.conky/weather/compass/arrow2.png'
+    temp2.save(parrow2)
+    temp3 = '${image /home/'
+    temp4 = homename
+    temp5 = '/.conky/weather/compass/arrow2'
+    pfcomp = '.png -p 305,60 -s 100x100}'
+    totcomp = temp3 + temp4 + temp5 + pfcomp
+    #filepath = '/home/' + homename + '/.conky(WEATHERBIT)/weather/Weatherbit/today/todaycompass.txt'
+    fo = open(pcompass, 'w')
+    fo.write('{}\n'.format(totcomp))
+    fo.write('{}\n'.format(pathwindrose))
+fo.close()
+################################ calculate dew point and write it
+dpc = cdewpoint
+color = 'white'
+#                  calculate the DEW POINT color font based on index
+if (dpc < 19):
+    color = 6
+elif (dpc >=19 and dpc < 22):
+    color = 9
+elif (dpc >=22):
+    color = 4
+else:
+    color = 'white'
+fo = open(pdewpoint, 'w')
+fo.write('{}\n'.format(cdewpoint))
+fo.write('{}\n'.format(color))
+fo.close()
+################################ calculate today UV index color and write it
+value = uv
+if (value >=0 and value < 3):
+    color = 6
+elif (value >=3 and value < 6):
+    color = 9
+elif (value >=6 and value < 8):
+    color = 3
+elif (value >=8 and value < 11):
+    color = 4
+elif (value >= 11):
+    color = 0
+else:
+    color = 2
+fo = open(puvindex, 'w')
+fo.write('{}\n'.format(value))
+fo.write('{}\n'.format(color))
+fo.close()
+################################ calculate today AQI color and write it
+value = aqi
+if (value >=0 and value < 51):
+    color = 6
+elif (value >=51 and value < 101):
+    color = 9
+elif (value >=101 and value < 151):
+    color = 3
+elif (value >=151 and value < 200):
+    color = 4
+elif (value >=201 and value < 300):
+    color = 0
+elif (value >=301):
+    color = 1
+fo = open(paqi, 'w')
+fo.write('{}\n'.format(value))
+fo.write('{}\n'.format(color))
+fo.close()
+################################ write main icon path
+pi = '${image /home/'
+pi2 = homename
+pi3 = '/.conkyWEATHERBIT/weather/Weatherbit/icons/'
+icontemp = pod
+pf = '.png -p 0,30 -s 120x120}'
+tot = pi + pi2 + pi3 + str(icon) + pf
+if icontemp == 'd':
+   #filepath = '/home/' + homename + '/.conkyWEATHERBIT/weather/Weatherbit/today/todayicon.txt'
+   fo = open(ptodaymainicon, 'w')
+   fo.write('{}\n'.format(tot))
+elif icontemp == 'n':
+   #filepath = '/home/' + homename + '/.conkyWEATHERBIT/weather/Weatherbit/today/todayicon.txt'
+   fo = open(ptodaymainicon, 'w')
+   fo.write('{}\n'.format(tot))
+fo.close()
+################################ write main icon path (using Openweathermap icons)
+pi = '${image /home/'
+pi2 = homename
+pi3 = '/.conkyWEATHERBIT/weather/Weatherbit/iconsOWM/'
+icontemp = pod
+pf = '.png -p 0,30 -s 160x120}'
+tot = pi + pi2 + pi3 + str(code) + icontemp + pf
+if icontemp == 'd':
+   #filepath = '/home/' + homename + '/.conky(WEATHERBIT)/weather/Weatherbit/today/todayiconOWM.txt'
+   fo = open(ptodaymainiconOWM, 'w')
+   fo.write('{}\n'.format(tot))
+elif icontemp == 'n':
+   #filepath = '/home/' + homename + '/.conky(WEATHERBIT)/weather/Weatherbit/today/todayiconOWM.txt'
+   fo = open(ptodaymainiconOWM, 'w')
+   fo.write('{}\n'.format(tot))
+fo.close()
+################################ write icon HOT path
+if tempfeelslike >= 38:
+   pi = '${image /home/'
+   pi2 = homename
+   pi3 = '/.conky/weather/Openweathermap/iconsOWM/'
+   temp = 'hot'
+   pf = '.png -p 240,70 -s 85x51}'
+   tot = pi + pi2 + pi3 + temp + pf
+   #filepath = '/home/' + homename + '/.conky(WEATHERBIT)/weather/Weatherbit/today/todayiconhotOWM.txt'
+   fo = open(photicon, 'w')
+   fo.write('{}\n'.format(tot))
+   fo.close()
+else:
+   temp = 'transparent'
+   pf = '.png -p 240,70 -s 85x51}'
+   tot = pi + pi2 + pi3 + temp + pf
+   #filepath = '/home/' + homename + '/.conky(WEATHERBIT)/weather/Weatherbit/today/todayiconhotOWM.txt'
+   fo = open(photicon, 'w')
+   fo.write('{}\n'.format(tot))
+   fo.close()
+################################ write icon COLD path
+if tempfeelslike <= 0:
+   pi = '${image /home/'
+   pi2 = homename
+   pi3 = '/.conky/weather/Openweathermap/iconsOWM/'
+   temp = 'cold'
+   pf = '.png -p 240,70 -s 85x51}'
+   tot = pi + pi2 + pi3 + temp + pf
+   #filepath = '/home/' + homename + '/.conky(WEATHERBIT)/weather/Weatherbit/today/todayiconcoldOWM.txt'
+   fo = open(pcoldicon, 'w')
+   fo.write('{}\n'.format(tot))
+   fo.close()
+else:
+   temp = 'transparent'
+   pf = '.png -p 240,70 -s 85x51}'
+   tot = pi + pi2 + pi3 + temp + pf
+   #filepath = '/home/' + homename + '/.conky(WEATHERBIT)/weather/Weatherbit/today/todayiconcoldOWM.txt'
+   fo = open(pcoldicon, 'w')
+   fo.write('{}\n'.format(tot))
+   fo.close()
+################################ create CURRENT, section
+#                 main CURRENT in todayconky.txt
+pathtemp = "$HOME/.conkyWEATHERBIT/weather/Weatherbit/today/"
+pathtemp2 = "$HOME/.conkyWEATHERBIT/weather/Weatherbit/"
+wbpylogo = '${image ' + pathtemp2 + 'python_logo.png -p 130,0 -s 15x15}'
+infotz = "${color2}${font = 'URW Gothic L:size=8'}WEATHERBIT    ${font}${color1}${alignr}${execpi 900 sed -n '6p' " + pathtemp + "wbtodayraw.txt}"
+infotzerr = "${color2}${font = 'URW Gothic L:size=8'}WEATHERBIT     ${color4}E: " + coderr + "${font}${color1}${alignr}${execpi 900 sed -n '6p' " + pathtemp + "wbtodayraw.txt}"
+latlon = "${alignr}(${execpi 900 sed -n '2p' " + pathtemp + "wbtodayraw.txt} - ${execpi 900 sed -n '3p' " + pathtemp + "wbtodayraw.txt})${font}${color}"
+curricon = "${execpi 900 sed -n '1p' " + pathtemp + "todayicon.txt}"
+firstdesc = "${color4}${goto 190}${execpi 900 sed -n '29p' " + pathtemp + "wbtodayclean.txt}${color}"
+currtemp = "${color}${goto 190}temp: ${execpi 900 sed -n '21p' " + pathtemp + "wbtodayclean.txt}${color}°C"
+currtempf = "${goto 190}(feel: ${execpi 900 sed -n '22p' " + pathtemp + "wbtodayclean.txt}°C)"
+thermo = "${execpi 900 sed -n '1p' " + pathtemp + "todayiconhotOWM.txt}${execpi 900 sed -n '1p' " + pathtemp + "todayiconcoldOWM.txt}"
+raininfo = "${color}${goto 190}rain/h: ${execpi 900 sed -n '31p' " + pathtemp + "wbtodayclean.txt}mm"
+snowinfo = "${color}${goto 190}snow/h: ${execpi 900 sed -n '32p' " + pathtemp + "wbtodayclean.txt}mm"
+winds = "${color}${goto 190}wind speed: ${execpi 900 sed -n '17p' " + pathtemp + "wbtodayclean.txt} Km/h"
+info1 = "${color2}HUMIDITY: $color${execpi 900 sed -n '23p' " + pathtemp + "wbtodayclean.txt}%${goto 260}${color2}PRESSURE: $color${execpi 900 sed -n '15p' " + pathtemp + "wbtodayclean.txt}mb"
+info2 = "${color2}UV INDEX (${color6}0${color2}-${color0}11+${color2}): ${eval $${color${execpi 900 sed -n '2p' " + pathtemp + "todaywbuvindex.txt}}}${execpi 900 sed -n '1p' " + pathtemp + "todaywbuvindex.txt}${goto 260}${color2}SEA PRESSURE: $color${execpi 900 sed -n '16p' " + pathtemp + "wbtodayclean.txt}mb"
+info3 = "${color2}DEW POINT: ${eval $${color${execpi 900 sed -n '2p' " + pathtemp + "todaywbdewpoint.txt}}}${execpi 900 sed -n '1p' " + pathtemp + "todaywbdewpoint.txt}${color}°C${color2}${goto 260}VISIBILITY: $color${execpi 900 sed -n '30p' " + pathtemp + "wbtodayclean.txt} Km"
+info4 = "${color2}CLOUDS COVER: $color${execpi 900 sed -n '25p' " + pathtemp + "wbtodayclean.txt}%${goto 260}${color2}AQI (${color6}0${color2}-${color8}500${color2}): ${eval $${color${execpi 900 sed -n '2p' " + pathtemp + "todaywbaqi.txt}}}${execpi 900 sed -n '1p' " + pathtemp + "todaywbaqi.txt}"
+info5= "${color2}SUNRISE: $color${execpi 900 sed -n '4p' " + pathtemp + "wbtodayclean.txt}${color2}${goto 260}SUNSET: $color${execpi 900 sed -n '5p' " + pathtemp + "wbtodayclean.txt}${color}"
+#info6= "${color2}RAIN: $color${execpi 900 sed -n '31p' " + pathtemp + "wbtodayclean.txt}mm/hr${color2}${goto 260}SNOW: $color${execpi 900 sed -n '32p' " + pathtemp + "wbtodayclean.txt}mm/hr${color}"
+info6= "${color2}SOLAR RAD: $color${execpi 900 sed -n '38p' " + pathtemp + "wbtodayclean.txt} W/m^2${color2}${goto 260}DHI: $color${execpi 900 sed -n '35p' " + pathtemp + "wbtodayclean.txt} W/m^2${color}"
+info7= "${color2}SOLAR ELEV ANGLE: $color${execpi 900 sed -n '39p' " + pathtemp + "wbtodayclean.txt}°${color2}${goto 260}DNI: $color${execpi 900 sed -n '36p' " + pathtemp + "wbtodayclean.txt} W/m^2${color}"
+info8= "${color2}SOLAR HOUR ANGLE: $color${execpi 900 sed -n '40p' " + pathtemp + "wbtodayclean.txt}°${color2}${goto 260}GHI: $color${execpi 900 sed -n '37p' " + pathtemp + "wbtodayclean.txt} W/m^2${color}"
+dashedline = '---------------------------------------------------------------------------------------------------------'
+fo = open(pathtodayconky, 'w')
+if coderr != 'ok':
+    fo.write('{}\n'.format(wbpylogo + infotzerr))
+else:
+    fo.write('{}\n'.format(wbpylogo + infotz))
+fo.write('{}\n'.format(latlon))
+fo.write('{}\n'.format(firstdesc))
+fo.write('{}\n'.format(currtemp))
+fo.write('{}\n'.format(currtempf + thermo))
+fo.write('{}\n'.format(raininfo))
+fo.write('{}\n'.format(snowinfo))
+fo.write('{}\n'.format(winds))
+fo.write('{}\n'.format(info1))
+fo.write('{}\n'.format(info2))
+fo.write('{}\n'.format(info3))
+fo.write('{}\n'.format(info4))
+fo.write('{}\n'.format(info5))
+fo.write('{}\n'.format(info6))
+fo.write('{}\n'.format(info7))
+fo.write('{}\n'.format(info8))
+fo.write('{}\n'.format(dashedline))
+fo.close()
+################################ create MOON section
+rowm1= "${alignr}${font URW Gothic L:size=6}${color7}by moongiant.com ${color2}$hr${color}${font}"
+rowm2= """${alignc}${color1}Details for ${execi 3600 echo `date --date="0 day" | awk '{print $1" "$3" "$2" "$6}'`}${color}"""
+rowm3= "${color2}Illumination: ${color}${execpi 600 sed -n '26p' $HOME/.conky/moon/Moongiant_python/rawstrippedcleanrows.txt | awk '{print $2}'}"
+rowm4= "${color2}Sun Angle: ${color}${execpi 600 sed -n '30p' $HOME/.conky/moon/Moongiant_python/rawstrippedcleanrows.txt | awk '{print $3}'}"
+rowm5= "${color2}Sun Distance: ${color}${execpi 600 sed -n '31p' $HOME/.conky/moon//Moongiant_python/rawstrippedcleanrows.txt | awk '{print $3}'}"
+rowm6= """${color2}Moon Age: ${color}${execpi 600 sed -n '27p' $HOME/.conky/moon/Moongiant_python/rawstrippedcleanrows.txt | awk '{print $3}'}"""
+rowm7= """${color2}Moon Angle: ${color}${execpi 600 sed -n '28p' $HOME/.conky/moon/Moongiant_python/rawstrippedcleanrows.txt | awk '{print $3}'}${color}${goto 230}${alignc}${execpi 600 sed -n '25p' $HOME/.conky/moon/Moongiant_python/rawstrippedcleanrows.txt | awk '{print $2}'}"""
+rowm8= """${color2}Moon Distance: ${color}${execpi 600 sed -n '29p' $HOME/.conky/moon/Moongiant_python/rawstrippedcleanrows.txt | awk '{print $3}'}${color}${goto 230}${alignc}${execpi 600 sed -n '25p' $HOME/.conky/moon/Moongiant_python/rawstrippedcleanrows.txt | awk '{print $3}'}"""
+rowm9= "${alignc}${color1}Average moonrise and moonset times${color}"
+rowm10= """${image $HOME/.conky/moon/Moongiant_python/0.png -p 280,305 -s 90x90}${image $HOME/.conky/moon/Moongiant_python/rise.jpg -p 0,410 -s 400x99}${image $HOME/.conky/moon/Moongiant_python/0.png -p 45,460 -s 30x30}${image $HOME/.conky/moon/Moongiant_python/0.png -p 325,460 -s 30x30}${image $HOME/.conky/moon/Moongiant_python/0.png -p 185,410 -s 30x30}"""
+fo = open(pathmoon, 'w')
+fo.write('{}\n'.format(rowm1))
+fo.write('{}\n'.format(rowm2))
+fo.write('{}\n'.format(rowm3))
+fo.write('{}\n'.format(rowm4))
+fo.write('{}\n'.format(rowm5))
+fo.write('{}\n'.format(rowm6))
+fo.write('{}\n'.format(rowm7))
+fo.write('{}\n'.format(rowm8))
+fo.write('{}\n'.format(rowm9))
+fo.write('{}\n'.format(rowm10))
+fo.close()
+################################ create ALERTS section
+#                 set variables and array
+anum = 2
+titlea = []
+descriptiona = []
+description2a = []
+severitya = []
+effective_utca = []
+effective_locala = []
+expires_utca = []
+expires_locala = []
+onset_utca = []
+onset_locala = []
+ends_utca = []
+ends_locala = []
+uria = []
+regionsa = []
+################################ choose how many rows write for some alerts variable
+def writedata(var, counter):
+    text2 = '-'
+    i = counter
+    z = 0
+    j = 0
+    y = 0
+    nchars = 100
+    myrowsad = 3
+    #                 format wmoareaDesc and it writes 3 rows for it (you can change the number of rows you want)
+    #descriptiona[i] = descriptiona[i].replace("\n", " ")
+    strlenght = len(var)
+    if strlenght == 0:
+        var = text2
+        print('{}\n'.format(text2))
+    wrapper = textwrap.TextWrapper(width=nchars, max_lines=(myrowsad))
+    word_list = wrapper.wrap(text=var)
+    for element in word_list:
+        fo.write('{}\n'.format(element))
+        y = y + 1
+        if (strlenght <= nchars) and (y == 1):
+            fo.write('{}\n'.format(text2))
+            print('{}\n'.format(text2))
+            y = y + 1
+        if (strlenght <= nchars*2) and (y == 2):
+            fo.write('{}\n'.format(text2))
+            print('{}\n'.format(text2))
+            y = y + 1
+        # if (strlenght <= nchars*3) and (y == 3):
+        #     fo.write('{}\n'.format(text2))
+        #     y = y + 1
+        # if (strlenght <= nchars*4) and (y == 4):
+        #     fo.write('{}\n'.format(text2))
+        #     y = y + 1
+        # if (strlenght <= nchars*5) and (y == 5):
+        #     fo.write('{}\n'.format(text2))
+        #     y = y + 1
+        # if (strlenght <= nchars*6) and (y == 6):
+        #     fo.write('{}\n'.format(text2))
+        #     y = y + 1
+        # if (strlenght <= nchars*7) and (y == 7):
+        #     fo.write('{}\n'.format(text2))
+        #     y = y + 1
+        if y == 3:
+            y = 0
+#                 get data for alerts
+lata = data2['lat']
+lona = data2['lon']
+timezonea = data2['timezone']
+city_namea = data2['city_name']
+state_codea = data2['state_code']
+country_codea = data2['country_code']
+for i in range(0, anum):
+    try:
+        titlea.append(data2['alerts'][i]['title'])
+    except:
+        titlea.append(vtext)
+    # get your language
+    try:
+        descriptiona.append(data2['alerts'][i]['description'])
+    except:
+        descriptiona.append(vtext)
+    # get the default language (english)
+    try:
+        description2a.append(data2['alerts'][i]['description'])
+    except:
+        description2a.append(vtext)
+    try:
+        severitya.append(data2['alerts'][i]['severity'])
+    except:
+        severitya.append(vtext)
+    try:
+        effective_utca.append(data2['alerts'][i]['effective_utc'])
+    except:
+        effective_utca.append(vtext)
+    try:
+        effective_locala.append(data2['alerts'][i]['effective_local'])
+    except:
+        effective_locala.append(vtext)
+    try:
+        expires_utca.append(data2['alerts'][i]['expires_utc'])
+    except:
+        expires_utca.append(vtext)
+    try:
+        expires_locala.append(data2['alerts'][i]['expires_local'])
+    except:
+        expires_locala.append(vtext)
+    try:
+        onset_utca.append(data2['alerts'][i]['onset_utc'])
+    except:
+        onset_utca.append(vtext)
+    try:
+        onset_locala.append(data2['alerts'][i]['onset_local'])
+    except:
+        onset_locala.append(vtext)
+    try:
+        ends_utca.append(data2['alerts'][i]['ends_utc'])
+    except:
+        ends_utca.append(vtext)
+    try:
+        ends_locala.append(data2['alerts'][i]['ends_local'])
+    except:
+        ends_locala.append(vtext)
+    try:
+        uria.append(data2['alerts'][i]['uri'])
+    except:
+        uria.append(vtext)
+    try:
+        regionsa.append(data2['alerts'][i]['regions'])
+    except:
+        regionsa.append(vtext)
+#                 write raw data for alerts
+fo = open(pathalertsraw, 'w')
+# general data
+fo.write('lat: {}\n'.format(lata))
+fo.write('lon: {}\n'.format(lona))
+fo.write('tz: {}\n'.format(timezonea))
+fo.write('city: {}\n'.format(city_namea))
+fo.write('state: {}\n'.format(state_codea))
+fo.write('country: {}\n'.format(country_codea))
+# alerts data
+divisor = "Italian(it-IT): "
+for i in range(0, anum):
+    fo.write('title: {}\n'.format(titlea[i]))
+    # write your language
+    if descriptiona[i] != vtext:
+        temp = descriptiona[i]
+        temp = temp.split(divisor)
+        temp = temp[1]
+        descriptiona[i] = temp
+        writedata(descriptiona[i], i)
+    else:
+        fo.write('desc: {}\n'.format(descriptiona[i]))
+    # write the default language (english)
+    if description2a != vtext:
+        temp = description2a[i]
+        temp = temp.split(divisor)
+        temp = temp[0]
+        description2a[i] = temp
+        writedata(description2a[i], i)
+        # partitioned_string = description2a[i].partition("[italian - it-IT]")
+        # description2a[i] = partitioned_string[0]
+        #writedata(description2a[i], i)
+    else:
+        fo.write('desc: {}\n'.format(description2a[i]))
+    #fo.write('desc: {}\n'.format(descriptiona[i]))
+    fo.write('sev: {}\n'.format(severitya[i]))
+    fo.write('effUTC: {}\n'.format(effective_utca[i]))
+    fo.write('effLOC: {}\n'.format(effective_locala[i]))
+    fo.write('exUTC: {}\n'.format(expires_utca[i]))
+    fo.write('exLOC: {}\n'.format(expires_locala[i]))
+    fo.write('startUTC: {}\n'.format(onset_utca[i]))
+    fo.write('startLOC: {}\n'.format(onset_locala[i]))
+    fo.write('endUTC: {}\n'.format(ends_utca[i]))
+    fo.write('endLOC: {}\n'.format(ends_locala[i]))
+    fo.write('url: {}\n'.format(uria[i]))
+    fo.write('regions: {}\n'.format(regionsa[i]))
+fo.close()
+#                 write clean data for alerts
+fo = open(pathalerts, 'w')
+# general data
+fo.write('{}\n'.format(lata))
+fo.write('{}\n'.format(lona))
+fo.write('{}\n'.format(timezonea))
+fo.write('{}\n'.format(city_namea))
+fo.write('{}\n'.format(state_codea))
+fo.write('{}\n'.format(country_codea))
+# alerts data
+for i in range(0, anum):
+    fo.write('{}\n'.format(titlea[i]))
+    writedata(descriptiona[i], i)
+    writedata(description2a[i], i)
+    #fo.write('{}\n'.format(descriptiona[i]))
+    fo.write('{}\n'.format(severitya[i]))
+    fo.write('{}\n'.format(effective_utca[i]))
+    fo.write('{}\n'.format(effective_locala[i]))
+    fo.write('{}\n'.format(expires_utca[i]))
+    fo.write('{}\n'.format(expires_locala[i]))
+    fo.write('{}\n'.format(onset_utca[i]))
+    fo.write('{}\n'.format(onset_locala[i]))
+    fo.write('{}\n'.format(ends_utca[i]))
+    fo.write('{}\n'.format(ends_locala[i]))
+    fo.write('{}\n'.format(uria[i]))
+    fo.write('{}\n'.format(regionsa[i]))
+fo.close()
+#                 create conky statements for ALERTS
+rowtitlea = []
+rowseva = []
+rowstarta = []
+rowenda = []
+startenda = []
+rowexa = []
+rowrega = []
+rowdesca = []
+rowdesca1 = []
+rowdesca2 = []
+rowdesca3 = []
+rowdesca4 = []
+rowcount = 0
+alertsblock = 18
+rowcolor = '${color}'
+rowcolor1 = '${color1}'
+rowcolor2 = '${color2}'
+rowcolor3 = '${color3}'
+rowcolor4 = '${color4}'
+rowcolor5 = '${color5}'
+rowcolor6 = '${color6}'
+rowcolor9 = '${color9}'
+rowfont6 = '${font URW Gothic L:size=6}'
+rowfont7 = '${font URW Gothic L:size=7}'
+rowfont8 = '${font URW Gothic L:size=8}'
+rowheadinga = rowcolor3 + '${alignc}----------------- WEATHERBIT ALERTS -----------------'
+for i in range(0, anum):
+        # block control
+    rowcount = 7 + alertsblock * i
+    rowtitlea.append(rowcolor2 + rowfont7 + "Title: " + rowcolor + "${execpi 600 sed -n '" + str(rowcount) + "p' " + pathalerts + "}")
+    rowcount = rowcount + 7
+    rowseva.append(rowcolor2 + "Sev: " + rowcolor + "${execpi 600 sed -n '" + str(rowcount) + "p' " + pathalerts + "}")
+    rowcount = rowcount + 6
+    rowstarta.append(rowcolor2 + "Start: " + rowcolor + "${execpi 600 sed -n '" + str(rowcount) + "p' " + pathalerts + "}")
+    rowcount = rowcount + 2
+    rowenda.append(rowcolor2 + "${goto 200}end: " + rowcolor + "${execpi 600 sed -n '" + str(rowcount) + "p' " + pathalerts + "}")
+    startenda.append(rowstarta[i] + rowenda[i])
+    rowcount = rowcount - 4
+    rowexa.append(rowcolor2 + "Expires: " + rowcolor + "${execpi 600 sed -n '" + str(rowcount) + "p' " + pathalerts + "}")
+    rowcount = rowcount + 6
+    rowrega.append(rowcolor2 + "Reg: " + rowcolor + "${execpi 600 sed -n '" + str(rowcount) + "p' " + pathalerts + "}")
+    rowcount = rowcount - 16
+    rowdesca.append(rowcolor1 + rowfont6 + "${execpi 600 sed -n '" + str(rowcount) + "p' " + pathalerts + '}' + rowcolor)
+    rowcount = rowcount + 1
+    rowdesca1.append(rowcolor1 + rowfont6 + "${execpi 600 sed -n '" + str(rowcount) + "p' " + pathalerts + '}' + rowcolor)
+    rowcount = rowcount +1
+    rowdesca2.append(rowcolor1 + rowfont6 + "${execpi 600 sed -n '" + str(rowcount) + "p' " + pathalerts + '}' + rowcolor)
+    rowcount = rowcount +1
+    rowdesca3.append(rowcolor1 + rowfont6 + "${execpi 600 sed -n '" + str(rowcount) + "p' " + pathalerts + '}' + rowcolor)
+    rowcount = rowcount +1
+    rowdesca4.append(rowcolor1 + rowfont6 + "${execpi 600 sed -n '" + str(rowcount) + "p' " + pathalerts + '}' + rowfont7 + rowcolor)
+#                 write conky syntax in alerts.txt
+fo = open(pathalertsc, 'w')
+fo.write('{}\n'.format(rowheadinga))
+for i in range(0, anum):
+    fo.write('{}\n'.format(rowtitlea[i]))
+    fo.write('{}\n'.format(rowseva[i]))
+    fo.write('{}\n'.format(startenda[i]))
+    fo.write('{}\n'.format(rowexa[i]))
+    fo.write('{}\n'.format(rowrega[i]))
+    fo.write('{}\n'.format(rowdesca[i]))
+    fo.write('{}\n'.format(rowdesca1[i]))
+    fo.write('{}\n'.format(rowdesca2[i]))
+    fo.write('{}\n'.format(rowdesca3[i]))
+    fo.write('{}\n'.format(rowdesca4[i]))
+fo.close()

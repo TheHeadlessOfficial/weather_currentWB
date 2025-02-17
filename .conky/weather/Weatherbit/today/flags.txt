@@ -1,0 +1,1 @@
+${image /home/hiro/.conkyGITHUB/flags/it.png -p 381,0 -s 19x13}

@@ -1,0 +1,1 @@
+${image /home/hiro/.conkyGITHUB/weather/Weatherbit/iconsOWM/transparent.png -p 240,70 -s 85x51}
