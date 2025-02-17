@@ -1,4 +1,4 @@
-# Conky Weather CURRENT
+# Conky Weather CURRENT (by Weatherbit)
  
 A standalone conky (written in Python) that shows the CURRENT weather, using [Weatherbit API](https://weatherbit.io/) website.<br>
 
