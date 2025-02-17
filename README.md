@@ -26,7 +26,7 @@ Run the file `.conkyrc_wbcurrent` from terminal (the first time you run this con
 ## Screenshot
 
 ![](https://github.com/TheHeadlessOfficial/weather_currentWB/blob/main/.conky/docs/screenshot.png)<br>
-    https://github.com/TheHeadlessOfficial/weather_currentWB/blob/main/.conky/weather/Weatherbit/docs/screenshot.jpg
+
 <br>
 <br>
 <br>
