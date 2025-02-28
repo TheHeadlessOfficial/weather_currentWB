@@ -1,17 +1,12 @@
-import os, sys
-from PIL import Image
-import time
-import requests
-# import datetime
-# import json
-# import pprint
-# import textwrap
-# from textwrap import dedent
 # Lock file to tell conky that the script is running
 lock_file = "/tmp/script_wbcurrent.lock"
 # Check for file lock
 try:
     open(lock_file, 'w').close()
+    import os, sys
+    from PIL import Image
+    import time
+    import requests
     ################################ get your HOME automatically
     homepath = os.environ['HOME']
     homename = homepath
